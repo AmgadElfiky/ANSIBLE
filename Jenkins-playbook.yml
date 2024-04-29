@@ -1,47 +1,45 @@
 ---
-- name: Install jenkins
+- name: Install Jenkins
   hosts: localhost
   become: yes
   become_user: root
 
   tasks:
-  - name: Update all packages to their latest version
-    apt:
-      name: "*"
-      state: latest
+    - name: Install dependencies
+      apt:
+        name:
+          - apt-transport-https
+          - ca-certificates
+          - curl
+          - gnupg
+          - software-properties-common
+          - wget
 
-  - name: download jenkins key
-    ansible.builtin.get_url:
-      url: https://pkg.jenkins.io/debian-stable/jenkins.io-2023.key
-      dest: /usr/share/keyrings/jenkins-keyring.asc
-        
-  # - name: Add Jenkins repo
-  #   ansible.builtin.apt_repository:
-  #     repo: deb [signed-by=/usr/share/keyrings/jenkins-keyring.asc] https://pkg.jenkins.io/debian-stable binary/
-  #     state: present
-  #     filename: jenkins.list  
-  - name: Add Jenkins repository to sources.list.d
+    - name: Add Jenkins repository key
       become: true
-      shell: echo "deb [signed-by=/usr/share/keyrings/jenkins-keyring.asc] https://pkg.jenkins.io/debian binary/" | sudo tee /etc/apt/sources.list.d/jenkins.list > /dev/null
+      shell: curl -fsSL https://pkg.jenkins.io/debian/jenkins.io-2023.key | sudo tee /usr/share/keyrings/jenkins-keyring.asc > /dev/null
+    
+    - name: Add Jenkins repository to sources.list.d
+      become: true
+      shell: echo "deb [signed-by=/usr/share/keyrings/jenkins-keyring.asc] https://pkg.jenkins.io/debian binary/" | sudo tee /etc/apt/sources.list.d/jenkins.list > /de>
 
-  - name: Update all packages to their latest version
-    apt:
-      name: "*"
-      state: latest
+    - name: Install fontconfig and openjdk-17-jre
+      become: true
+      apt:
+        name:
+          - fontconfig
+          - openjdk-17-jre
+        state: present
 
-  - name: Install fontconfig
-    shell: apt install fontconfig -y    
+    - name: Install Jenkins
+      become: true
+      apt:
+        name: jenkins
+        state: present
 
-  - name: Install java
-    shell: apt install fontconfig openjdk-17-jre -y  
-
-  - name: Install the Jenkins
-    ansible.builtin.apt:
-      name: jenkins
-      state: present  
-
-  - name: Make sure a service unit is running
-    ansible.builtin.systemd:
-      state: started
-      name: jenkins
-      enabled: yes    
+    - name: Enable Jenkins service
+      become: true
+      systemd:
+        name: jenkins
+        enabled: yes
+        state: started
