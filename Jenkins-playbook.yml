@@ -16,8 +16,8 @@
       dest: /usr/share/keyrings/jenkins-keyring.asc
 
   - name: Add Jenkins repository to sources.list.d
-      become: true
-      shell: echo "deb [signed-by=/usr/share/keyrings/jenkins-keyring.asc] https://pkg.jenkins.io/debian binary/" | sudo tee /etc/apt/sources.list.d/jenkins.list > /dev/null
+    become: true
+    shell: echo "deb [signed-by=/usr/share/keyrings/jenkins-keyring.asc] https://pkg.jenkins.io/debian binary/" | sudo tee /etc/apt/sources.list.d/jenkins.list > /dev/null
 
   - name: Update all packages to their latest version
     apt:
