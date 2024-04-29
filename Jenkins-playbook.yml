@@ -32,10 +32,6 @@
     become: true
     shell: sudo apt-get install -y fontconfig openjdk-17-jre
 
-  - name: Update package cache
-    apt:
-      update_cache: yes
-
   - name: Update all packages to their latest version
     apt:
       name: "*"
