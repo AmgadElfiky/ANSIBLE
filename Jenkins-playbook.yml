@@ -36,6 +36,11 @@
       apt:
         update_cache: yes
 
+  - name: Update all packages to their latest version
+    apt:
+      name: "*"
+      state: latest
+
   - name: Install Jenkins
     become: true
     apt:
