@@ -23,9 +23,10 @@
     become: true
     shell: echo "deb [signed-by=/usr/share/keyrings/jenkins-keyring.asc] https://pkg.jenkins.io/debian binary/" | sudo tee /etc/apt/sources.list.d/jenkins.list > /dev/null
 
-  - name: Update Ubuntu packages cache after adding repository
+  - name: Update all packages to their latest version
     apt:
-      update_cache: yes
+      name: "*"
+      state: latest
 
   - name: Install fontconfig and openjdk-17-jre
     become: true
